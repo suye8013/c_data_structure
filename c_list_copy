@@ -1,0 +1,121 @@
+#include<stdio.h>
+#include<windows.h>
+#include<assert.h>
+typedef int Datatype;
+typedef struct ComplexListNode
+{
+	Datatype _data;
+	struct ComplexListNode* _next;
+	struct ComplexListNode* _random;
+}ComplexListNode;
+
+ComplexListNode* ComplexBuyNode(Datatype x)
+{
+	ComplexListNode* newNode = (ComplexListNode*)malloc(sizeof(ComplexListNode));
+	newNode->_data = x;
+	newNode->_next = NULL;
+	newNode->_random = NULL;
+	return newNode;
+}
+ComplexListNode* CopyComplexList(ComplexListNode* list)
+{
+	ComplexListNode* newList = NULL;
+	ComplexListNode* pos = NULL;
+	ComplexListNode* sub = NULL;
+	ComplexListNode* cur = list;
+	while (cur)
+	{
+		if (newList == NULL)
+		{
+			newList = ComplexBuyNode(cur->_data);
+			newList->_random = NULL;
+			newList->_next = NULL;
+			pos = newList;
+			cur = cur->_next;
+		}
+		else
+		{
+			pos->_next = ComplexBuyNode(cur->_data);
+			pos = pos->_next;
+			cur = cur->_next;
+		}
+	}
+	cur = list;
+	pos = newList;
+	while (cur)
+	{
+		if (cur->_random == NULL)
+		{
+			pos = pos->_next;
+			cur = cur->_next;
+		}
+		else
+		{
+			sub = newList;
+			while (sub->_data!=cur->_random->_data)
+			{
+				sub = sub->_next;
+			}
+			pos->_random = sub;
+			cur = cur->_next;
+			pos = pos->_next;
+		}
+	}
+	return newList;
+}
+
+ComplexListNode* Find(ComplexListNode* list, int x)
+{
+	ComplexListNode* cur = list;
+	while (cur)
+	{
+		if (cur->_data == x)
+		{
+			return cur;
+		}
+		cur = cur->_next;
+	}
+	return NULL;
+}
+void Print(ComplexListNode* list)
+{
+	ComplexListNode* cur = list;
+	while (cur)
+	{
+		printf("%d ",cur->_data);
+		cur = cur->_next;
+	}
+	printf("\n");
+}
+int main()
+{
+	ComplexListNode* Node = NULL;
+	ComplexListNode* pos = NULL;
+	int i = 0;
+	for (; i < 9; i++)
+	{
+		if (Node == NULL)
+		{
+			Node = ComplexBuyNode(i);
+			pos = Node;
+		}
+		else
+		{
+			pos->_next = ComplexBuyNode(i);
+			pos = pos->_next;
+		}
+	}
+	Print(Node);
+	pos = Find(Node,3);
+	pos->_random = Find(Node, 1);
+	pos = Find(Node, 1);
+	pos->_random = Find(Node, 8);
+	pos = Find(Node, 8);
+	pos->_random = Find(Node, 6);
+	pos = Find(Node, 6);
+	pos->_random = Find(Node, 1);
+	ComplexListNode* node = CopyComplexList(Node);
+	Print(node);
+	system("pause");
+	return 0;
+}

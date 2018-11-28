@@ -1,0 +1,642 @@
+#include<stdio.h>
+#include<assert.h>
+#include"SListNode.h"
+#include"test.h"
+
+//从尾到头打印单链表
+void SLitsPrintTailToHeadR(SListNode* pHead)
+{
+	assert(pHead);
+	if (pHead->_next == NULL)
+	{
+		printf("%d ", pHead->_data);
+		return;
+	}
+	else if (pHead->_next != NULL)
+	{
+		SLitsPrintTailToHeadR(pHead->_next);
+	}
+	printf("%d ", pHead->_data);
+}
+
+void SLitsPrintTailToHead(SListNode* pHead)
+{
+	assert(pHead);
+	SListNode* node = NULL;
+	SListNode* cur = pHead;
+	while (node != cur)
+	{
+		while (cur->_next != node)
+		{
+			cur = cur->_next;
+		}
+			printf("%d ", cur->_data);
+			node = cur;
+			cur = pHead; 
+	}
+	printf("\n");
+}
+//删除一个无头单链表的非尾节点（不能遍历链表）
+void SListDelNonTailNode(SListNode* pos)
+{
+	assert(pos);
+	assert(pos->_next);
+	SListNode* cur = pos->_next;
+	pos->_data = cur->_data;
+	pos->_next = cur->_next;
+	free(cur);
+	cur = NULL;
+}
+//在无头单链表的一个节点前插入一个节点（不能遍历链表）
+void SListInsertFrontNode(SListNode* pos, DataType x)
+{
+	assert(pos);
+	SListNode* cur = pos->_next;
+	SListNode* node = BuySListNode(x);
+	pos->_next = node;
+	node->_next = cur;
+	DataType tmp = pos->_data;
+	pos->_data = node->_data;
+	node->_data = tmp;
+}
+//单链表实现约瑟夫环(JosephCircle)
+//SListNode* SListJosephCircle(SListNode* pHead, int k)
+//{
+//
+//}
+//逆置 / 反转单链表
+SListNode* SListReverse(SListNode* list)//破坏原链表
+{
+	SListNode* node = list;
+	SListNode* Newlist = NULL;
+	if (list == NULL || list->_next == NULL)
+	{
+		return list;
+	}
+	else
+	{
+		while (node->_next)
+		{
+			node = node->_next;
+		}
+		Newlist = BuySListNode(node->_data);
+		SListPopBack(&list);
+		while (list)
+		{
+			node = list;
+			while (node->_next)
+			{
+				node = node->_next;
+			}
+			SListPushBack(&Newlist, node->_data);
+			SListPopBack(&list);
+		}
+		return Newlist;
+	}
+}
+SListNode* SListReverse1(SListNode* list)//不破坏原链表
+{
+	SListNode* node = list;
+	SListNode* cur = NULL;
+	SListNode* Newlist = NULL;
+	if (list == NULL || list->_next == NULL)
+	{
+		return list;
+	}
+	else
+	{
+		while (list != cur)
+		{
+			node = list;
+			while (node->_next != cur)
+			{
+				node = node->_next;
+			}
+			cur = node;
+			if (Newlist == NULL)
+			{
+				Newlist = BuySListNode(node->_data);
+			}
+			else
+			{
+				SListPushBack(&Newlist, node->_data);
+			}
+		}
+		return Newlist;
+	}
+}
+//单链表排序（冒泡排序&快速排序）
+//// 升序 
+static void Swap(DataType* x, DataType* y)
+{
+	DataType tmp = *x;
+	*x = *y;
+	*y = tmp;
+}
+void SListBubbleSort(SListNode* list)
+{
+	SListNode* cur = NULL;
+	SListNode* node = list;
+	if (list != NULL&&list->_next != NULL)
+	{
+		while (list != cur)
+		{
+			node = list;
+			while (node->_next != cur)
+			{
+				if (node->_data > node->_next->_data)
+				{
+					Swap(&node->_data, &node->_next->_data);
+					node = node->_next;
+				}
+			}
+			cur = node;
+		}
+	}
+}
+//合并两个有序链表, 合并后依然有序
+SListNode* SListMerge(SListNode* list1, SListNode* list2)
+{
+	SListNode* NewList = NULL;
+	SListNode* cur = NULL;
+	SListNode* sub = NULL;
+	SListNode* pos = NULL;
+	if (list1 == NULL)
+	{
+		return list2;
+	}
+	else
+	{
+		return list1;
+	}
+	if ((list1->_data>list1->_next->_data&&list2->_data<list2->_next->_data) || (list1->_data<list1->_next->_data&&list2->_data>list2->_next->_data))
+	{
+		perror("两个链表顺序不同");
+		return 0;
+	}
+
+	if (list1->_data>list1->_next->_data)//降序
+	{
+		while (list1&&list2)
+		{
+			if (NewList == NULL)
+			{
+				if (list1->_data > list2->_data)
+				{
+					NewList = list1;
+					list1 = list1->_next;
+				}
+				else
+				{
+					NewList = list2;
+					list2 = list2->_next;
+				}
+				pos = NewList;
+			}
+			else if (list1->_data > list2->_data)
+			{
+				cur = list2;
+				sub = list1;
+				pos->_next = list1;
+				list1 = sub->_next;
+				pos = pos->_next;
+				pos->_next = NULL;
+			}
+			else if (list1->_data < list2->_data)
+			{
+				cur = list1;
+				sub = list2;
+				pos->_next = list2;
+				list2 = sub->_next;
+				pos = pos->_next;
+				pos->_next = NULL;
+			}
+		}
+	}
+	else if (list1->_data<list1->_next->_data)//升序
+	{
+		while (list1&&list2)
+		{
+			if (NewList == NULL)
+			{
+				if (list1->_data > list2->_data)
+				{
+					NewList = list2;
+					list2 = list2->_next;
+				}
+				else
+				{
+					NewList = list1;
+					list1 = list1->_next;
+				}
+				pos = NewList;
+			}
+			else if (list1->_data>list2->_data)
+			{
+				cur = list1;
+				sub = list2;
+				pos->_next = list2;
+				list2 = sub->_next;
+				pos = pos->_next;
+				pos->_next = NULL;
+			}
+			else if (list1->_data < list2->_data)
+			{
+				cur = list1;
+				sub = list2;
+				pos->_next = list1;
+				list1 = cur->_next;
+				pos = pos->_next;
+				pos->_next = NULL;
+			}
+		}
+	}
+	if (list1 == NULL)
+	{
+		pos->_next = list2;
+	}
+	else
+	{
+		pos->_next = list1;
+	}
+	return NewList;
+}
+//查找单链表的中间节点，要求只能遍历一次链表
+SListNode* SListFindMidNode(SListNode* list)
+{
+	assert(list);
+	SListNode* fast = list;
+	SListNode* slow = list;
+	while (fast->_next)
+	{
+		fast = fast->_next->_next;
+		slow = slow->_next;
+		if (fast == NULL)
+		{
+			break;
+		}
+	}
+	return slow;
+}
+//查找单链表的倒数第k个节点，要求只能遍历一次链表
+SListNode* SListFindTailKNode(SListNode* list, size_t k)
+{
+	assert(list);
+	SListNode* fast = list;
+	SListNode* slow = list;
+	while (k--)
+	{
+		fast = fast->_next;
+	}
+	while (fast)
+	{
+		slow = slow->_next;
+		fast = fast->_next;
+	}
+	return slow;
+}
+//删除链表的倒数第K个结点
+void SListRemoveTailKNode(SListNode* list, size_t k)
+{
+	assert(list);
+	SListNode* pos = SListFindTailKNode(list, k);
+	SListNode* node = pos->_next;
+	Swap(&pos->_data, &node->_data);
+	pos->_next = node->_next;
+	free(node);
+	node = NULL;
+}
+
+//判断单链表是否带环？若带环，求环的长度？求环的入口点？并计算
+//每个算法的时间复杂度&空间复杂度。
+SListNode* SListIsCycle(SListNode* list)
+{
+	SListNode* fast = NULL;
+	SListNode* slow = NULL;
+	if (list != NULL)
+	{
+		fast = list;
+		slow = list;
+		while (fast)
+		{
+			fast = fast->_next->_next;
+			slow = slow->_next;
+			if (fast == slow)
+			{
+				return fast;
+			}
+		}
+	}
+	return NULL;
+}
+int SListCycleLen(SListNode* meetNode)
+{
+	assert(meetNode);
+	SListNode* fast = meetNode;
+	SListNode* slow = meetNode;
+	int len = 0;
+	fast = fast->_next->_next;
+	slow = slow->_next;
+	len++;
+	while (fast != slow)
+	{
+		fast = fast->_next->_next;
+		slow = slow->_next;
+		len++;
+	}
+	return len;
+}
+int SListEntryNode(SListNode* list, SListNode* meetNode)
+{
+	assert(list&&meetNode);
+	SListNode* start = list;
+	SListNode* entry = meetNode;
+	while (start != entry)
+	{
+		start = start->_next;
+		entry = entry->_next;
+	}
+	return entry->_data;
+}
+
+//判断两个链表是否相交，若相交，求交点。（假设链表不带环）
+int SListIsCrossNode(SListNode* list1, SListNode* list2)
+{
+	SListNode* start1 = list1;
+	SListNode* start2 = list2;
+	int num1 = 0;
+	int num2 = 0;
+	int count = 0;
+	while (start1->_next)
+	{
+		start1 = start1->_next;
+		num1++;
+	}
+	while (start2->_next)
+	{
+		start2 = start2->_next;
+		num2++;
+	}
+	if (start1 != start2)
+	{
+		return -1;
+	}
+	else
+	{
+		start1 = list1;
+		start2 = list2;
+		count = num1 > num2 ? num1 - num2 : num2 - num1;
+		while (count--)
+		{
+			if (num1 > num2)
+			{
+				start1 = start1->_next;
+			}
+			else
+			{
+				start2 = start2->_next;
+			}
+		}
+		while (start1 != start2)
+		{
+			start1 = start1->_next;
+			start2 = start2->_next;
+		}
+		return start1->_data;
+	}
+}
+//判断两个链表是否相交，若相交，求交点。（假设链表可能带环）【升级版】
+SListNode* SListCrossNode(SListNode* list1, SListNode* list2)
+{
+	SListNode* fast1 = list1;
+	SListNode* slow1 = list1;
+	SListNode* fast2 = list2;
+	SListNode* slow2 = list2;
+	SListNode* meet1 = NULL;
+	SListNode* meet2 = NULL;
+	SListNode* meet = NULL;
+	int flag = 0;
+	while (fast1)
+	{
+		fast1 = fast1->_next->_next;
+		slow1 = slow1->_next;
+		if (fast1 == slow1)
+		{
+			break;
+		}
+	}
+	while (fast2)
+	{
+		fast2 = fast2->_next->_next;
+		slow2 = slow2->_next;
+		if (fast2 == slow2)
+		{
+			break;
+		}
+	}
+	meet1 = meet = fast1;
+	meet2 = fast2;
+	while (meet1->_next != meet)
+	{
+		if (meet1->_next == meet2)
+		{
+			flag = 1;
+			break;
+		}
+		meet1 = meet1->_next;
+	}
+	if (flag == 0)//不相交
+	{
+		return NULL;
+	}
+	else if (flag=1)
+	{
+		SListNode* start1 = list1;
+		SListNode* start2 = list2;
+		int num1 = 0;
+		int num2 = 0;
+		int count = 0;
+		while (fast1 != start1)
+		{
+			num1++;
+			fast1 = fast1->_next;
+			start1 = start1->_next;
+		}
+		while (fast2 != start2)
+		{
+			num2++;
+			fast2 = fast2->_next;
+			start2 = start2->_next;
+		}
+		if (fast1 == fast2)//环外相交
+		{
+			start1 = list1;
+			start2 = list2;
+			count = num1 > num2 ? num1 - num2 : num2 - num1;
+			while (count--)
+			{
+				if (num1 > num2)
+				{
+					start1 = start1->_next;
+				}
+				else
+				{
+					start2 = start2->_next;
+				}
+			}
+			while (start1 != start2)
+			{
+				start1 = start1->_next;
+				start2 = start2->_next;
+			}
+			return start1;
+		}
+		else//环内相交
+		{
+			return fast1;
+		}
+	}
+}
+//复杂链表的复制。一个链表的每个节点，有一个指向next指针指向
+//下一个节点，还有一个random指针指向这个链表中的一个随机节点
+//或者NULL，现在要求实现复制这个链表，返回复制后的新链表。
+
+
+ComplexListNode* ComplexBuyNode(int x)
+{
+	ComplexListNode* newNode = (ComplexListNode*)malloc(sizeof(ComplexListNode));
+	newNode->_data = x;
+	newNode->_next = NULL;
+	newNode->_random = NULL;
+	return newNode;
+}
+ComplexListNode* CopyComplexList(ComplexListNode* list)
+{
+	{
+		ComplexListNode* newList = NULL;
+		ComplexListNode* pos = NULL;
+		ComplexListNode* sub = NULL;
+		ComplexListNode* cur = list;
+		while (cur)
+		{
+			if (newList == NULL)
+			{
+				newList = ComplexBuyNode(cur->_data);
+				newList->_random = NULL;
+				newList->_next = NULL;
+				pos = newList;
+				cur = cur->_next;
+			}
+			else
+			{
+				pos->_next = ComplexBuyNode(cur->_data);
+				pos = pos->_next;
+				cur = cur->_next;
+			}
+		}
+		cur = list;
+		pos = newList;
+		while (cur)
+		{
+			if (cur->_random == NULL)
+			{
+				pos = pos->_next;
+				cur = cur->_next;
+			}
+			else
+			{
+				sub = newList;
+				while (sub->_data != cur->_random->_data)
+				{
+					sub = sub->_next;
+				}
+				pos->_random = sub;
+				cur = cur->_next;
+				pos = pos->_next;
+			}
+		}
+		return newList;
+	}
+
+}
+//求两个已排序单链表中相同的数据。
+void UnionSet1(SListNode* list1, SListNode* list2)//未排序
+{
+	int count = 0;
+	SListNode* cur = list1;
+	SListNode* sub = list2;
+	if (list1 != NULL && list2 != NULL)
+	{
+		while (cur)
+		{
+			sub = list2;
+			while (sub)
+			{
+				if (cur->_data == sub->_data)
+				{
+					count = 1;
+					printf("%d ", cur->_data);
+				}
+				sub = sub->_next;
+			}
+			cur = cur->_next;
+		}
+	}
+	if (count == 0 || list1 == NULL || list2 == NULL)
+	{
+		printf("没有相同数据");
+	}
+	printf("\n");
+}
+void UnionSet1(SListNode* list1, SListNode* list2)//已排序
+{
+	int count = 0;
+	SListNode* cur = list1;
+	SListNode* sub = list2;
+	if (list1 != NULL && list2 != NULL)
+	{
+		if (cur->_data > cur->_next->_data)//降序
+		{
+			while (cur&&sub)
+			{
+				if (cur->_data == sub->_data)
+				{
+					count = 1;
+					printf("%d ", cur->_data);
+				}
+				else if (cur->_data > sub->_data)
+				{
+					cur = cur->_next;
+				}
+				else if (cur->_data<sub->_data)
+				{
+					sub = sub->_next;
+				}
+			}
+		}
+		else if(cur->_data > cur->_next->_data)//升序
+		{
+			while (cur&&sub)
+			{
+				if (cur->_data == sub->_data)
+				{
+					count = 1;
+					printf("%d ", cur->_data);
+				}
+				else if (cur->_data < sub->_data)
+				{
+					cur = cur->_next;
+				}
+				else if (cur->_data > sub->_data)
+				{
+					sub = sub->_next;
+				}
+			}
+		}
+	}
+	if (count == 0 || list1 == NULL || list2 == NULL)
+	{
+		printf("没有相同数据");
+	}
+	printf("\n");
+}
